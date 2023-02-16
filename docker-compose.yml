@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  app:
+    build: 
+      context: docker-context/app
+      args:
+        - USER=buster
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./app:/app"
+    environment:
+      - DEBUG=$DEBUG      
+      - DB_HOST=$DB_HOST
+      - DB_NAME=$DB_NAME
+      - DB_USER=$DB_USER
+      - DB_PASS=$DB_PASS
+      - DB_PORT=$DB_PORT
+    depends_on:
+      - db
+    networks:
+      - buster
+
+  db:
+    build: 
+      context: docker-context/db
+    restart: always
+    volumes:
+      - db-data:/etc/mysql/conf.d
+    environment:
+      - MYSQL_DATABASE=$DB_NAME
+      - MYSQL_ROOT_PASSWORD=$DB_PASS
+    networks:
+      - buster
+    
+
+volumes:
+  db-data:
+
+networks:
+  buster:
